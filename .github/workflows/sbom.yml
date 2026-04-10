@@ -1,0 +1,35 @@
+name: Generate SBOM
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate SBOM
+        uses: microsoft/sbom-tool@latest
+        with:
+          BuildDropPath: ${{ github.workspace }}
+          PackageName: sbom-demo
+          PackageVersion: 1.0.0
+          PackageSupplier: Upward
+          ManifestDirPath: ${{ github.workspace }}/_manifest
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-manifest
+          path: _manifest/
