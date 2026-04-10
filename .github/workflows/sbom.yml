@@ -19,14 +19,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Download sbom-tool binary
+        run: |
+          curl -Lo sbom-tool https://github.com/microsoft/sbom-tool/releases/download/v4.1.5/sbom-tool-linux-x64
+          chmod +x sbom-tool
+
       - name: Generate SBOM
-        uses: microsoft/sbom-tool@v4.1.5
-        with:
-          BuildDropPath: ${{ github.workspace }}
-          PackageName: sbom-demo
-          PackageVersion: 1.0.0
-          PackageSupplier: Upward
-          ManifestDirPath: ${{ github.workspace }}/_manifest
+        run: |
+          ./sbom-tool generate \
+            -b ${{ github.workspace }} \
+            -bc ${{ github.workspace }} \
+            -pn sbom-demo \
+            -pv 1.0.0 \
+            -ps Upward \
+            -nsb https://github.com/angelzero10/sbom-demo \
+            -m ${{ github.workspace }}/_manifest
 
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
