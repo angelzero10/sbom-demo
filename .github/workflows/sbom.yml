@@ -26,6 +26,7 @@ jobs:
 
       - name: Generate SBOM
         run: |
+          mkdir -p ${{ github.workspace }}/_manifest
           ./sbom-tool generate \
             -b ${{ github.workspace }} \
             -bc ${{ github.workspace }} \
